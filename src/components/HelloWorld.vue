@@ -17,9 +17,6 @@ export default {
   name: "HelloWorld",
   data() {
     return {
-      appId: "",
-      token: "",
-      channel: "",
       options: {
         // Pass your App ID here.
         appId: "0a7016bdc6ce4b7684bfa83d3064b822",
@@ -62,11 +59,12 @@ export default {
     // Specify the ID of the DIV container. You can use the uid of the local user.
     $.localPlayerContainer.id = $.options.uid;
     // Set the textContent property of the local video container to the local user id.
-    $.localPlayerContainer.textContent = "Local user " + $.options.uid;
+    $.localPlayerContainer.textContent = "Voce esta ao vivo ";
     // Set the local video container size.
     $.localPlayerContainer.style.width = "640px";
     $.localPlayerContainer.style.height = "480px";
     $.localPlayerContainer.style.padding = "15px 5px 5px 5px";
+
     // Set the remote video container size.
     $.remotePlayerContainer.style.width = "640px";
     $.remotePlayerContainer.style.height = "480px";
@@ -79,6 +77,7 @@ export default {
       console.log("subscribe success");
       // Subscribe and play the remote video in the container If the remote user publishes a video track.
       if (mediaType == "video") {
+        $.this("ta no if video");
         // Retrieve the remote video track.
         $.channelParameters.remoteVideoTrack = user.videoTrack;
         // Retrieve the remote audio track.
@@ -89,7 +88,7 @@ export default {
         $.remotePlayerContainer.id = user.uid.toString();
         $.channelParameters.remoteUid = user.uid.toString();
         $.remotePlayerContainer.textContent =
-          "Remote user " + user.uid.toString();
+          "ao vivo pessoa: " + user.uid.toString();
         // Append the remote container to the page body.
         document.body.append($.remotePlayerContainer);
         if ($.options.role != "host") {
@@ -140,6 +139,7 @@ export default {
         $.channelParameters.localVideoTrack.stop();
         if ($.channelParameters.remoteVideoTrack != null) {
           // Play the remote video stream, if the remote user has joined the channel.
+          // $.channelParameters.remoteVideoTrack.play($.remotePlayerContainer);
           $.channelParameters.remoteVideoTrack.play($.remotePlayerContainer);
         }
       }
@@ -149,6 +149,7 @@ export default {
     host: async function () {
       const $ = this;
       $.teste(" passoou aqui ===== host =======");
+
       // Save the selected role in a variable for reuse.
       $.options.role = "host";
       // Call the method to set the role as Host.
@@ -160,14 +161,27 @@ export default {
           $.channelParameters.localVideoTrack,
         ]);
         // Stop playing the remote video.
-        $.channelParameters.remoteVideoTrack.stop();
+        // $.channelParameters.remoteVideoTrack.stop();
+        // $.channelParameters.remoteVideoTrack.play($.remotePlayerContainer);
         // Start playing the local video.
         $.channelParameters.localVideoTrack.play($.localPlayerContainer);
+        $.channelParameters.localVideoTrack.play($.remotePlayerContainer);
       }
     },
     join: async function () {
       const $ = this;
       $.teste(" ====== entrou join =======");
+
+      if (document.getElementById("Audience").checked) {
+        $.teste("clicou audiencia");
+        $.audience();
+      }
+
+      if (document.getElementById("host").checked) {
+        $.teste("clicou host");
+        $.host();
+      }
+
       // if ($.options.role == "") {
       //   window.alert("Select a user role first!");
       //   return;
@@ -193,6 +207,7 @@ export default {
       // Publish the local audio and video track if the user joins as a host.
       if ($.options.role == "host") {
         // Publish the local audio and video tracks in the channel.
+        $.teste($.agoraEngine);
         await $.agoraEngine.publish([
           $.channelParameters.localAudioTrack,
           $.channelParameters.localVideoTrack,
@@ -202,16 +217,6 @@ export default {
         $.channelParameters.localVideoTrack.play($.localPlayerContainer);
         console.log("publish success!");
       }
-      document.getElementById("Audience").onclick = async function () {
-        if (document.getElementById("Audience").checked) {
-          $.audience();
-        }
-      };
-      document.getElementById("host").onclick = async function () {
-        if (document.getElementById("host").checked) {
-          $.host();
-        }
-      };
     },
     leave: async function () {
       const $ = this;
