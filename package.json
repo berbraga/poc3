@@ -8,6 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "agora-rtc-sdk-ng": "^4.16.0",
+    "firebase": "^9.15.0",
+    "global": "^4.4.0",
     "vue": "^3.2.13",
     "vuex": "^4.0.0"
   },
