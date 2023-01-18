@@ -64,8 +64,8 @@ export default {
     // Set the textContent property of the local video container to the local user id.
     $.localPlayerContainer.textContent = "Local user " + $.options.uid;
     // Set the local video container size.
-    $.localPlayerContainer.style.width = "640px";
-    $.localPlayerContainer.style.height = "480px";
+    $.localPlayerContainer.style.width = "340px";
+    $.localPlayerContainer.style.height = "280px";
     $.localPlayerContainer.style.padding = "15px 5px 5px 5px";
     // Set the remote video container size.
     $.remotePlayerContainer.style.width = "640px";
