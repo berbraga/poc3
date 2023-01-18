@@ -1,3 +1,4 @@
+/* eslint-disable $rule */
 <template>
   <div class="row">
     <div>
@@ -23,7 +24,7 @@ export default {
         channel: "poc4",
         // Pass your temp token here.
         token:
-          "007eJxTYOBedPae3cm0UxxPVO6XN/zdEC31unn9tcs/OI1/qxqovRJTYDBINDcwNEtKSTZLTjVJMjezMElKS7QwTjE2MDNJsjAy4vp1PLkhkJGBg+sqEyMDBIL4LAwF+ckmDAwAxUAgOQ==",
+          "007eJxTYPCbuY8tdM3cw1O68/Vi49ku3p41VXdL3T625W2NhbxLmtUVGAwSzQ0MzZJSks2SU02SzM0sTJLSEi2MU4wNzEySLIyM1CxOJDcEMjIsU2piZGSAQBCfhaEgP9mEgQEAEDwd8Q==",
         // Set the user ID.
         uid: 0,
         // Set the user role
@@ -50,7 +51,10 @@ export default {
     const $ = this;
 
     // Create an instance of the Agora Engine
-    this.agoraEngine = AgoraRTC.createClient({ mode: "live", codec: "vp8" });
+    this.agoraEngine = AgoraRTC.createClient({
+      mode: "live",
+      codec: "vp8",
+    });
     // Dynamically create a container in the form of a DIV element to play the remote video track.
     this.remotePlayerContainer = document.createElement("div");
     // Dynamically create a container in the form of a DIV element to play the local video track.
@@ -67,13 +71,15 @@ export default {
     $.remotePlayerContainer.style.width = "640px";
     $.remotePlayerContainer.style.height = "480px";
     $.remotePlayerContainer.style.padding = "15px 5px 5px 5px";
-    $.teste("--------------- passou aqui ---------------");
+    $.teste("--------------- passou aqui 1 ---------------");
     // Listen f  or the "user-published" event to retrieve a AgoraRTCRemoteUser object.
     $.agoraEngine.on("user-published", async (user, mediaType) => {
       // Subscribe to the remote user when the SDK triggers the "user-published" event.
+      $.teste("======= esta dentro ==============================");
       await $.agoraEngine.subscribe(user, mediaType);
       console.log("subscribe success");
       // Subscribe and play the remote video in the container If the remote user publishes a video track.
+
       if (mediaType == "video") {
         // Retrieve the remote video track.
         $.channelParameters.remoteVideoTrack = user.videoTrack;
@@ -120,36 +126,43 @@ export default {
     },
     audience: async function () {
       const $ = this;
-      $.teste(" passoou aqui ===== audiencia =======");
       // Save the selected role in a variable for reuse.
       $.options.role = "audience";
+      $.teste(" passoou aqui ===== audiencia =======");
+      $.teste($.channelParameters.localVideoTrack);
+
       if (
         $.channelParameters.localAudioTrack != null &&
         $.channelParameters.localVideoTrack != null
       ) {
+        $.teste(" passoou aqui 2 ===== audiencia =======");
         // Unpublish local tracks to set the user role as audience.
         await $.agoraEngine.unpublish([
           $.channelParameters.localAudioTrack,
           $.channelParameters.localVideoTrack,
         ]);
         // Stop playing the local video track
-        $.channelParameters.localVideoTrack.stop();
+        // $.channelParameters.localVideoTrack.stop();
         if ($.channelParameters.remoteVideoTrack != null) {
           // Play the remote video stream, if the remote user has joined the channel.
           $.channelParameters.remoteVideoTrack.play($.remotePlayerContainer);
         }
       }
+      $.teste(" passoou aqui 3 ===== audiencia =======");
       // Call the method to set the role as Audience.
       await $.agoraEngine.setClientRole($.options.role);
     },
+
     host: async function () {
       const $ = this;
       $.teste(" passoou aqui ===== host =======");
+      $.teste($.channelParameters.localVideoTrack);
       // Save the selected role in a variable for reuse.
       $.options.role = "host";
       // Call the method to set the role as Host.
       await $.agoraEngine.setClientRole($.options.role);
       if ($.channelParameters.localVideoTrack != null) {
+        $.teste(" localvideo track eh diferente null ");
         // Publish the local audio and video track in the channel.
         await $.agoraEngine.publish([
           $.channelParameters.localAudioTrack,
@@ -159,25 +172,23 @@ export default {
         // $.channelParameters.remoteVideoTrack.stop();
         // Start playing the local video.
         $.channelParameters.localVideoTrack.play($.localPlayerContainer);
+        // $.channelParameters.localVideoTrack.play($.remotePlayerContainer);
       }
     },
     join: async function () {
       const $ = this;
       $.teste(" ====== entrou join =======");
-      // document.getElementById("Audience").onclick = async function () {
 
       if (document.getElementById("Audience").checked) {
-        $.audience();
+        $.options.role = "audience";
       }
-      // };
-      // document.getElementById("host").onclick = async function () {
-      if (document.getElementById("host").checked) {
-        $.host();
-      }
-      // };
 
-      // Join a channel.
+      if (document.getElementById("host").checked) {
+        // $.host();
+        $.options.role = "host";
+      }
       await $.agoraEngine.join(
+        // Join a channel.
         $.options.appId,
         $.options.channel,
         $.options.token,
@@ -190,6 +201,17 @@ export default {
       $.channelParameters.localVideoTrack =
         await AgoraRTC.createCameraVideoTrack();
       // Append the local video container to the page body.
+      $.teste(" ---- 1 --------");
+      if (document.getElementById("Audience").checked) {
+        $.audience();
+      }
+
+      $.teste(" ------ 2 --------");
+      if (document.getElementById("host").checked) {
+        $.host();
+        // $.options.role = "host";
+      }
+      $.teste(" ------ 3 --------");
       document.body.append($.localPlayerContainer);
       $.teste(" ====== deu append na div =======");
 
@@ -227,9 +249,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.ship {
-  display: flex;
-}
-</style>
