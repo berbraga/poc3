@@ -14,12 +14,8 @@
 <script>
 import AgoraRTC from "agora-rtc-sdk-ng";
 export default {
-  name: "HelloWorld",
   data() {
     return {
-      appId: "",
-      token: "",
-      channel: "",
       options: {
         // Pass your App ID here.
         appId: "0a7016bdc6ce4b7684bfa83d3064b822",
@@ -31,7 +27,7 @@ export default {
         // Set the user ID.
         uid: 0,
         // Set the user role
-        role: "host",
+        role: "",
       },
       channelParameters: {
         // A variable to hold a local audio track.
@@ -72,7 +68,7 @@ export default {
     $.remotePlayerContainer.style.height = "480px";
     $.remotePlayerContainer.style.padding = "15px 5px 5px 5px";
     $.teste("--------------- passou aqui ---------------");
-    // Listen for the "user-published" event to retrieve a AgoraRTCRemoteUser object.
+    // Listen f  or the "user-published" event to retrieve a AgoraRTCRemoteUser object.
     $.agoraEngine.on("user-published", async (user, mediaType) => {
       // Subscribe to the remote user when the SDK triggers the "user-published" event.
       await $.agoraEngine.subscribe(user, mediaType);
@@ -160,7 +156,7 @@ export default {
           $.channelParameters.localVideoTrack,
         ]);
         // Stop playing the remote video.
-        $.channelParameters.remoteVideoTrack.stop();
+        // $.channelParameters.remoteVideoTrack.stop();
         // Start playing the local video.
         $.channelParameters.localVideoTrack.play($.localPlayerContainer);
       }
@@ -168,10 +164,17 @@ export default {
     join: async function () {
       const $ = this;
       $.teste(" ====== entrou join =======");
-      // if ($.options.role == "") {
-      //   window.alert("Select a user role first!");
-      //   return;
-      // }
+      // document.getElementById("Audience").onclick = async function () {
+
+      if (document.getElementById("Audience").checked) {
+        $.audience();
+      }
+      // };
+      // document.getElementById("host").onclick = async function () {
+      if (document.getElementById("host").checked) {
+        $.host();
+      }
+      // };
 
       // Join a channel.
       await $.agoraEngine.join(
@@ -193,6 +196,9 @@ export default {
       // Publish the local audio and video track if the user joins as a host.
       if ($.options.role == "host") {
         // Publish the local audio and video tracks in the channel.
+        $.teste("entrou no host");
+        $.teste($.channelParameters);
+
         await $.agoraEngine.publish([
           $.channelParameters.localAudioTrack,
           $.channelParameters.localVideoTrack,
@@ -202,16 +208,6 @@ export default {
         $.channelParameters.localVideoTrack.play($.localPlayerContainer);
         console.log("publish success!");
       }
-      document.getElementById("Audience").onclick = async function () {
-        if (document.getElementById("Audience").checked) {
-          $.audience();
-        }
-      };
-      document.getElementById("host").onclick = async function () {
-        if (document.getElementById("host").checked) {
-          $.host();
-        }
-      };
     },
     leave: async function () {
       const $ = this;
